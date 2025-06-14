@@ -72,7 +72,7 @@ Port: 5433
 
 ### Inside N8N
 In the credentials of N8N the DB must point to the postgres_enery container, NOT localhost.
-Host: postgres_enery
+Host: postgres_energy
 Database: (POSTGRES_ENERGY_DB_NAME)
 Username: (POSTGRES_ENERGY_DB_USER)
 Password: (POSTGRES_ENERGY_DB_PASSWORD)

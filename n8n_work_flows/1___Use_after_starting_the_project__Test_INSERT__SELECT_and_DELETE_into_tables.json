@@ -1,0 +1,174 @@
+{
+  "name": "1. [Use after starting the project] Test INSERT, SELECT and DELETE into tables",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -180
+      ],
+      "id": "b0034661-7da8-497f-a996-5a4b9a117d1b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "## Use case:\nRun this workflow to TEST the tables of the database **after starting the project**\n\nWhat this flow does:\n1. INSERT test data\n2. SELECT test data\n3. DELETE part of test data\n4. TRUNCATE (delete) all test data\n\n\n**Note: this must be run on EMPTY tables**\n\nAny error in this workflow indicates inconsistency with the requirements of the project\n\nTip: run each node one by one and use DBeaver to see if data is actually appearing and disapearing from the DB",
+        "height": 620,
+        "width": 1240,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        -580
+      ],
+      "typeVersion": 1,
+      "id": "079caa2e-9410-4f7d-89a0-f66a894ffbda",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "/* -----------------------------------------------------------------\n   Seed test data (clients, contracts,\n   energy_readings).  All statements run inside a single transaction\n   so they either all succeed or all roll back.\n------------------------------------------------------------------*/\nBEGIN;\n\n/* === 1. clients  ============================================== */\nINSERT INTO clients (id, name) VALUES\n    (1, 'Client A'),\n    (2, 'Client B'),\n    (3, 'Client C');\n\n/* === 2. contracts  ============================================ */\n/* each contract belongs to one client                            */\nINSERT INTO contracts (id, client_id, is_active, created_at) VALUES\n    (1, 1, TRUE, '2025-06-10'),\n    (2, 2, TRUE, '2025-06-11'),\n    (3, 3, TRUE, '2025-06-12'),\n    (4, 1, TRUE, '2025-06-13');   -- extra contract for Client A\n\n/* === 3. energy_readings  ====================================== */\n/* each reading belongs to one contract                           */\nINSERT INTO energy_readings (id, contract_id, reading_amount_kwh, created_at) VALUES\n    (1, 1,  100.00, '2025-06-10'),\n    (2, 2,  300.00, '2025-06-11'),\n    (3, 3, 2000.00, '2025-06-12'),\n    (4, 4, 2200.00, '2025-06-13');\n\nCOMMIT;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        180,
+        -180
+      ],
+      "id": "c452d9e9-d594-44a3-99a6-43fe680812a7",
+      "name": "Inserts data",
+      "credentials": {
+        "postgres": {
+          "id": "gCzuQe5pQ1unD27b",
+          "name": "[Client] Postgres account - energy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "/* 1) Single flattened view: client → contract → reading */\nSELECT\n    cl.id   AS client_id,\n    cl.name AS client_name,\n\n    ct.id         AS contract_id,\n    ct.is_active,\n    ct.created_at AS contract_created_at,\n\n    er.id                 AS reading_id,\n    er.reading_amount_kwh AS reading_kwh,\n    er.created_at         AS reading_at\nFROM clients          cl\nJOIN contracts        ct ON ct.client_id   = cl.id\nJOIN energy_readings  er ON er.contract_id = ct.id\nORDER BY cl.id, ct.id, er.created_at;\n\n/* 2) Total kWh consumed per client */\nSELECT\n    cl.id,\n    cl.name,\n    SUM(er.reading_amount_kwh) AS total_kwh\nFROM clients          cl\nJOIN contracts        ct ON ct.client_id   = cl.id\nJOIN energy_readings  er ON er.contract_id = ct.id\nGROUP BY cl.id, cl.name\nORDER BY cl.id;\n\n/* 3) Quick lookup: every reading for a specific contract */\nSELECT *\nFROM energy_readings\nWHERE contract_id = 1          -- ← replace with the contract you need\nORDER BY created_at DESC;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        420,
+        -180
+      ],
+      "id": "24470ff5-70de-47a9-bb0e-b745e7b7f171",
+      "name": "Pulls data from DB",
+      "credentials": {
+        "postgres": {
+          "id": "gCzuQe5pQ1unD27b",
+          "name": "[Client] Postgres account - energy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "/* n8n Postgres → Execute Query node\n   Deletes **only** the data that belongs to Client 1,\n   following the correct order: readings → contracts → client. */\nBEGIN;\n\n/* 1. Remove every energy reading linked to any contract of Client 1 */\nDELETE FROM energy_readings\nWHERE contract_id IN (\n    SELECT id\n    FROM contracts\n    WHERE client_id = 1\n);\n\n/* 2. Remove all contracts that belong to Client 1 */\nDELETE FROM contracts\nWHERE client_id = 1;\n\n/* 3. Finally, remove Client 1 itself */\nDELETE FROM clients\nWHERE id = 1;\n\nCOMMIT;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        640,
+        -180
+      ],
+      "id": "fd2e5c05-909b-4b1b-ac0a-631539238d00",
+      "name": "Deletes all data from client 1 in order",
+      "credentials": {
+        "postgres": {
+          "id": "gCzuQe5pQ1unD27b",
+          "name": "[Client] Postgres account - energy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "BEGIN;\n\n-- Remove ALL rows from the three tables in one shot\nTRUNCATE TABLE\n    energy_readings,\n    contracts,\n    clients\nRESTART IDENTITY      -- reset the sequences/serials\nCASCADE;              -- automatically empties child tables first\n\nCOMMIT;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        840,
+        -180
+      ],
+      "id": "f960c3b8-308b-4978-bc7f-61d0c6c931d3",
+      "name": "Deletes ALL test data",
+      "credentials": {
+        "postgres": {
+          "id": "gCzuQe5pQ1unD27b",
+          "name": "[Client] Postgres account - energy"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Inserts data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserts data": {
+      "main": [
+        [
+          {
+            "node": "Pulls data from DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pulls data from DB": {
+      "main": [
+        [
+          {
+            "node": "Deletes all data from client 1 in order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deletes all data from client 1 in order": {
+      "main": [
+        [
+          {
+            "node": "Deletes ALL test data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fa14c6b9-a883-400e-abb5-23f3ca805491",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "354abe45e2e7b39a30446811024acde6f946baedd2dd252c4a345d29bf6cd870"
+  },
+  "id": "lRIXm48NfN5kYuC8",
+  "tags": []
+}
