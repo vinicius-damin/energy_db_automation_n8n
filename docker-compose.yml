@@ -5,6 +5,8 @@ volumes:
   n8n_storage:
 
 services:
+
+
   postgres:
     image: postgres:16
     restart: always
@@ -42,3 +44,5 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+
+    
