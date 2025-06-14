@@ -7,7 +7,7 @@ volumes:
 
 services:
 
-  # Runs the internal n8n database
+  # Runs the internal n8n database. See https://github.com/n8n-io/n8n-hosting/tree/main/docker-compose/withPostgres for more information.
   postgres:
     image: postgres:16
     restart: always
