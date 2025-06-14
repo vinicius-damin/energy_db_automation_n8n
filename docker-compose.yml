@@ -3,10 +3,11 @@ version: '3.8'
 volumes:
   db_storage:
   n8n_storage:
+  energy_db_storage:
 
 services:
 
-
+  # Runs the internal n8n database
   postgres:
     image: postgres:16
     restart: always
@@ -16,6 +17,8 @@ services:
       - POSTGRES_DB
       - POSTGRES_NON_ROOT_USER
       - POSTGRES_NON_ROOT_PASSWORD
+    ports:
+      - "5434:5432" # Allows access to the n8n internal database on the port 5434 of the host. Only use in production if something other than n8n needs to access it (your machine for example!)
     volumes:
       - db_storage:/var/lib/postgresql/data
       - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
@@ -25,6 +28,7 @@ services:
       timeout: 5s
       retries: 10
 
+  # Runs n8n
   n8n:
     image: docker.n8n.io/n8nio/n8n
     restart: always
@@ -45,4 +49,21 @@ services:
       postgres:
         condition: service_healthy
 
+  # Runs the clients energy info database
+  postgres_energy:
+    image: postgres:16
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_ENERGY_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_ENERGY_DB_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_ENERGY_DB_NAME}
+    volumes:
+      - energy_db_storage:/var/lib/postgresql/data
+    ports:
+      - "5433:5432" # Allows access to clients energy database on the port 5433 of the host. Only use in production if something other than n8n needs to access it (your machine for example!)
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_ENERGY_DB_USER} -d ${POSTGRES_ENERGY_DB_NAME}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
     
