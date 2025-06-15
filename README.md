@@ -136,7 +136,7 @@ All the **relevant information** about how to test the application is **inside t
 
 2. Run "[2___Use_after_starting_the_project_test_SQL_insert_select_delete](n8n_work_flows/2___Use_after_starting_the_project_test_SQL_insert_select_delete.json)"
 3. Activate the workflow "[3___Webhook_to_store_data](n8n_work_flows/3___Webhook_to_store_data.json)"
-4. Activate the workflow "[4___Webhook_to_get_outliers](n8n_work_flows/4___Webhook_to_get_outliers.json"
+4. Activate the workflow "[4___Webhook_to_get_outliers](n8n_work_flows/4___Webhook_to_get_outliers.json)"
 
 ### 👀 2.1 Inserting real world data into DB (n8n webhook)
 
