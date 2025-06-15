@@ -1,46 +1,46 @@
 {
-  "name": "0. [Use after starting the project] Creates tables and relations",
+  "name": "0___Use_after_starting_the_project__Creates_tables_and_relations",
   "nodes": [
     {
       "parameters": {},
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -260,
-        -100
+        80,
+        460
       ],
-      "id": "8b1cacd0-0014-4307-8d77-0615c4d3bc37",
+      "id": "2401d002-2f03-4d77-ba96-26a3c244ac6e",
       "name": "When clicking ‘Execute workflow’"
     },
     {
       "parameters": {
-        "content": "## Use case:\nRun this workflow directly in N8N after starting the Volume of the Postgres DB\n\n### 1. **Create the credentials to the DB**\nIn the credentials of N8N the DB must point to the postgres_energy container, NOT localhost. \n- **Host**: postgres_energy (defined in the docker-compose.yml)\n- **Database**: <POSTGRES_ENERGY_DB_NAME> (defined in the .env file)\n- **Username**: <POSTGRES_ENERGY_DB_USER> (defined in the .env file)\n- **Password**: <POSTGRES_ENERGY_DB_PASSWORD> (defined in the .env file)\n- **Port**: 5432 (the standart port postgres runs)\n\n*Note: If you want to create this using DBeaver or PGAdmin you must point to localhost (the machine in which the containers are running) and port 5433 (defined in the docker-compose.yml)*\n\n### 2. **Run this workflow**\nThis creates the tables, indexes and constraints of needed",
-        "height": 680,
-        "width": 600,
+        "content": "# RUN ME:\nRun this workflow directly in N8N after starting the Volume of the Postgres DB\n\n## Step-by-step:\n\n### 1. **Create the credentials to the DB**\nIn the credentials of N8N the DB must point to the postgres_energy container, NOT localhost. \n- **Host**: postgres_energy (defined in the docker-compose.yml)\n- **Database**: <POSTGRES_ENERGY_DB_NAME> (defined in the .env file)\n- **Username**: <POSTGRES_ENERGY_DB_USER> (defined in the .env file)\n- **Password**: <POSTGRES_ENERGY_DB_PASSWORD> (defined in the .env file)\n- **Port**: 5432 (the standart port postgres runs)\n\n*Note: If you want to create this using DBeaver or PGAdmin you must point to localhost (the machine in which the containers are running) and port 5433 (defined in the docker-compose.yml)*\n\n### 2. **Run this workflow**\nThis creates the tables, indexes and constraints of needed",
+        "height": 780,
+        "width": 660,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -340,
-        -560
+        0,
+        -100
       ],
       "typeVersion": 1,
-      "id": "ace08959-389c-4ff7-adff-0e5c161a6927",
+      "id": "4b898ff5-f5a9-43af-99be-a0b15c9a0ee2",
       "name": "Sticky Note"
     },
     {
       "parameters": {
         "content": "## Explanation of the tables needed for the energy-tracking project (clients ↔ contracts ↔ energy_readings)\n \nThe query in the \"Create tables, constraints and indexes\" create all the needed tables, establishes **one-to-many relationships** (clients→contracts→readings), enforces **referential integrity** with foreign-keys, and equips each table with an **index that matches its most common query pattern**.\n\n\n---\n\n### 1  Transaction wrapper  \n```sql\nBEGIN;\n…                       -- all CREATE / INDEX statements\nCOMMIT;\n```\nGuarantees atomicity (if any DDL fails the whole block is rolled back).\n\n\n---\n\n### 2  Table *clients*\n```sql\nCREATE TABLE IF NOT EXISTS clients (\n    id   SERIAL PRIMARY KEY,\n    name TEXT NOT NULL\n);\n```\nSERIAL PRIMARY KEY: auto-increments the ids and enforces unique ids.\nTEXT NOT NULL: The name of the client must be a valid string.\n\n\n---\n\n### 3  Table *contracts* (“one client → many contracts”)\n```\nCREATE TABLE IF NOT EXISTS contracts (\n    id         SERIAL PRIMARY KEY,\n    client_id  INT  NOT NULL,\n    is_active  BOOLEAN DEFAULT TRUE,\n    created_at TIMESTAMP NOT NULL DEFAULT NOW(),\n \n    CONSTRAINT fk_contracts_client\n      FOREIGN KEY (client_id)\n      REFERENCES clients(id)\n      ON UPDATE CASCADE\n      ON DELETE RESTRICT\n);\nCREATE INDEX IF NOT EXISTS idx_contracts_client_active\n    ON contracts (client_id, is_active);\n```\nTo consider:\nclient_id is an int because of the table *clients*. The is_active column is a bolean and the created_at must be a timestamp.\nThe constraint ensures consistency between the tables, it blocks removal of clients that still owns contracts and propagates primary key changes upstream\nThe index speets up queries lke \"all active contracts for client X\"\n\n\n---\n\n### 4  Table *energy_readings* (“one contract → many readings”)\n```\nCREATE TABLE IF NOT EXISTS energy_readings (\n    id                 SERIAL PRIMARY KEY,\n    contract_id        INT NOT NULL,\n    reading_amount_kwh NUMERIC(10,2) NOT NULL,\n    created_at         TIMESTAMP NOT NULL DEFAULT NOW(),\n\n    CONSTRAINT fk_readings_contract\n      FOREIGN KEY (contract_id)\n      REFERENCES contracts(id)\n      ON UPDATE CASCADE\n      ON DELETE RESTRICT\n);\nCREATE INDEX IF NOT EXISTS idx_readings_contract_date\n    ON energy_readings (contract_id, created_at DESC);\n\n```\nTo consider:\nNUMERIC (10,2) works well until 99.999.999.99 kWh, more than enough for any residential or comertial use. \n*Warning*: it any reading is above 100MWh we need to change to bigger numbers (Ex: NUMERIC(12,2))\nThe contract_id follows the same pattern as client_id in the contracts table\nThe FK works also the same way\nThe index speeds up queries like \"latest readings for contract X\"\n\n",
         "height": 1560,
-        "width": 1440
+        "width": 820
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -340,
-        200
+        720,
+        -100
       ],
       "typeVersion": 1,
-      "id": "3d3f46cf-cc2c-42a2-b0ff-0d34259b2b9a",
+      "id": "3f70f919-b1e8-4282-beaf-9c3147ea3ddc",
       "name": "Sticky Note1"
     },
     {
@@ -52,15 +52,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        -100
+        360,
+        460
       ],
-      "id": "a582f223-f839-4848-82a0-e17e2b26c060",
+      "id": "e755c050-fce8-4b20-b4c6-290fa7242c11",
       "name": "Create tables, constraints and indexes",
       "credentials": {
         "postgres": {
-          "id": "gCzuQe5pQ1unD27b",
-          "name": "[Client] Postgres account - energy"
+          "id": "lib3KQQokucMgRMe",
+          "name": "Postgres account"
         }
       }
     }
@@ -83,11 +83,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a06208d5-74a8-4ca5-832a-6eb6c2f42a9b",
+  "versionId": "849b5126-ace9-437a-9570-aee33e0708ed",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "354abe45e2e7b39a30446811024acde6f946baedd2dd252c4a345d29bf6cd870"
+    "instanceId": "caab66e1a9e45e87f9a2b25d354c453ee8ec993a7591d8d6a3a18f1e8de7c6e2"
   },
-  "id": "b9Qgv1aELpTqyKPg",
+  "id": "tDYp3utWD0egcGQ0",
   "tags": []
 }

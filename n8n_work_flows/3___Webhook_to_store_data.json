@@ -1,0 +1,981 @@
+{
+  "name": "2___Webhook_to_store_data",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Send the zip file to this webhook:\nYou must send a POST request to this endpoint to store data into the database.\n\n1. Turn this workflow active\n2. Make this POST api call [(available in Postman)](https://.postman.co/workspace/My-Workspace~7f422de4-6c94-4f6c-8995-58975a0e0a16/request/45052632-86ec8740-b7ae-4840-9d19-74b6d414f772?action=share&creator=45052632&ctx=documentation)\n```\ncurl --location 'http://localhost:5678/webhook/insert_data' \\\n--form 'zip_file=@\"/your_path_to_the_repository/energy_db_automation_n8n/files_to_test_webhook/send_this_data_to_webhook.zip\"'\n```\n",
+        "height": 660,
+        "width": 1220,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -880,
+        -1220
+      ],
+      "typeVersion": 1,
+      "id": "268b8a72-b012-44bf-b856-6f696f95905b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "insert_data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        -920
+      ],
+      "id": "a1125aa7-9d47-45ca-85e7-af6ba6410284",
+      "name": "Webhook",
+      "webhookId": "36198c4a-0722-49ae-a360-bcb54ad22c4c"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        4560,
+        -980
+      ],
+      "id": "72dfdde4-a4df-44d3-8c3c-0b9c5aa43aa0",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        980,
+        -920
+      ],
+      "id": "d1c3ae83-6d39-4306-bea6-decc5d7aaf11",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "=$binary",
+        "options": {
+          "includeBinary": true
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -920
+      ],
+      "id": "79901674-1842-4a2c-a097-3b820c22df74",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "content": "## Transformation\nThis is where the magic happens. Incoming files are split up into individual items, each with a single binary data object under the `data` key.\n\nPara mandar um doc por vez ou formatar conforme necessário",
+        "height": 360,
+        "width": 320
+      },
+      "name": "Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -20,
+        -960
+      ],
+      "typeVersion": 1,
+      "id": "656034eb-9619-457e-b4f2-3dd7f9dc2415"
+    },
+    {
+      "parameters": {
+        "jsCode": "let results = [];\n\nfor (item of items) {\n    for (key of Object.keys(item.binary)) {\n        results.push({\n            json: {\n                fileName: item.binary[key].fileName,\n                mimeType: item.binary[key].mimeType,\n                fileType: item.binary[key].fileType,\n                fileExtension: item.binary[key].fileExtension\n            },\n            binary: {\n                data: item.binary[key],\n            }\n        });\n    }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -760
+      ],
+      "id": "1a6474c5-b75c-47ea-aeed-74bc06a0ef66",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.filename}}",
+                    "rightValue": "clientes.csv",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0c0f23a5-42d1-45da-a44a-a99a11e48cd3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "clientes"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "99c11ec1-7a1b-4339-a79b-0da722682a07",
+                    "leftValue": "={{$json.filename}}",
+                    "rightValue": "contratos.csv",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "contratos"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5355c299-9893-4740-b443-8ab9c4ff49d6",
+                    "leftValue": "={{$json.filename}}",
+                    "rightValue": "leituras.csv",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "leituras"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1940,
+        -960
+      ],
+      "id": "d4892913-7270-4150-91cf-646a116be7f3",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "686bf091-8df5-4c5f-9ef1-05717ecf5511",
+              "name": "file_description",
+              "value": "={{$binary}}",
+              "type": "string"
+            },
+            {
+              "id": "2f40ec46-c62b-4c0b-b6f9-2694d956c10e",
+              "name": "filename",
+              "value": "={{$binary.data.fileName}}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        -980
+      ],
+      "id": "d607b74b-cc3c-4fc5-b621-f98c605093a8",
+      "name": "file description"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        760,
+        -980
+      ],
+      "id": "493149f7-2bcd-4896-974b-3f7d4b2199dc",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1160,
+        -920
+      ],
+      "id": "efd39554-f823-42c5-9e14-e9ebf9a69bf1",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2820,
+        -960
+      ],
+      "id": "91920e07-1448-4846-96e3-1ff776df221d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3440,
+        -820
+      ],
+      "id": "395dfb49-82a1-4330-92fe-b52abfa1ff4e",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2340,
+        -1100
+      ],
+      "id": "d6cd8d14-aaee-43d7-b805-c732cc08056f",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2960,
+        -960
+      ],
+      "id": "2cc92bc0-646c-42d6-83df-72688889ef49",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3600,
+        -820
+      ],
+      "id": "779573c9-c99a-4a18-9fce-e511df4768ff",
+      "name": "Split Out3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        -1000
+      ],
+      "id": "1e1845ab-b99b-43e1-83c4-5a58ce6d5347",
+      "name": "names and data of csvs"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01b9c604-55db-4905-91e4-ab3864067ae4",
+              "name": "filename",
+              "value": "={{ $('Loop Over Items').item.json.filename }}",
+              "type": "string"
+            },
+            {
+              "id": "cec699a6-1f7e-4a8f-83b0-41bccd791d55",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        -920
+      ],
+      "id": "0e08f81d-448c-4272-9b7c-f667d34a8106",
+      "name": "join name and data"
+    },
+    {
+      "parameters": {
+        "content": "# Extract data from files",
+        "height": 460,
+        "width": 1280
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        -1120
+      ],
+      "typeVersion": 1,
+      "id": "76355b82-3007-4282-bb67-59a79ec97463",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Save data into DB\nAttention: the order must be clients, contracts and energy_readings",
+        "height": 580,
+        "width": 2240
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1860,
+        -1200
+      ],
+      "typeVersion": 1,
+      "id": "e4731ea9-170d-489c-aa32-4b33fac7e4c2",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "clients",
+          "mode": "list",
+          "cachedResultName": "clients"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "name": "={{ $json.name }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2520,
+        -1100
+      ],
+      "id": "3003304a-1e78-4824-a668-d6e64a101120",
+      "name": "insert clients",
+      "credentials": {
+        "postgres": {
+          "id": "lib3KQQokucMgRMe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "contracts",
+          "mode": "list",
+          "cachedResultName": "contracts"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "id": "={{ $json.id }}",
+            "name": "={{ $json.name }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3120,
+        -960
+      ],
+      "id": "026405ab-d49e-4bbf-ab78-788d006de530",
+      "name": "insert contracts",
+      "credentials": {
+        "postgres": {
+          "id": "lib3KQQokucMgRMe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "energy_readings",
+          "mode": "list",
+          "cachedResultName": "energy_readings"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "id": "={{ $json.id }}",
+            "name": "={{ $json.name }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3760,
+        -820
+      ],
+      "id": "e305feb9-ee85-46e3-9ab7-87b7ac8cebc9",
+      "name": "insert energy_readings",
+      "credentials": {
+        "postgres": {
+          "id": "lib3KQQokucMgRMe",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2680,
+        -1100
+      ],
+      "id": "81c943cb-b54c-4969-9e0d-ba12c9acaee6",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        3280,
+        -960
+      ],
+      "id": "226d46ed-e55e-4bf9-86c0-3918ed120d56",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        3940,
+        -820
+      ],
+      "id": "0d0f39bd-960b-4181-bfbe-9cf3764adff0",
+      "name": "Limit2"
+    },
+    {
+      "parameters": {
+        "content": "# Constructs return payload\nReturn the last item that was INSERTED into the DB",
+        "height": 480,
+        "width": 640,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4240,
+        -1160
+      ],
+      "typeVersion": 1,
+      "id": "8cc49113-c2c2-4c98-9dfe-12f7bdb187f8",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ea1ee648-694b-48fe-a52b-774c890a1856",
+              "name": "info",
+              "value": "Congratulations, your database was populated!",
+              "type": "string"
+            },
+            {
+              "id": "9dd3ba69-538a-4452-9e95-d725096ed1f8",
+              "name": "last_item_inserted",
+              "value": "={{ $json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4380,
+        -980
+      ],
+      "id": "824f7d69-bd23-463b-beb2-5a67501d4731",
+      "name": "body of respose"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "zip_file"
+      },
+      "type": "n8n-nodes-base.compression",
+      "typeVersion": 1.1,
+      "position": [
+        -380,
+        -920
+      ],
+      "id": "7235e315-1348-421b-b456-ab045d111625",
+      "name": "Decompression"
+    }
+  ],
+  "pinData": {
+    "Limit2": [
+      {
+        "json": {
+          "id": 1,
+          "contract_id": 1,
+          "reading_amount_kwh": "57641.00",
+          "created_at": "2024-01-15T00:00:00.000Z"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Decompression",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "file description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "file description": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "names and data of csvs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "join name and data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Split Out3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "insert clients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "insert contracts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out3": {
+      "main": [
+        [
+          {
+            "node": "insert energy_readings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "names and data of csvs": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "join name and data": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insert clients": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insert contracts": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insert energy_readings": {
+      "main": [
+        [
+          {
+            "node": "Limit2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit2": {
+      "main": [
+        [
+          {
+            "node": "body of respose",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "body of respose": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decompression": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "37a0fea7-991d-487e-afc9-1153ee95b13f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "caab66e1a9e45e87f9a2b25d354c453ee8ec993a7591d8d6a3a18f1e8de7c6e2"
+  },
+  "id": "gUZmXX6NkzzSTP21",
+  "tags": []
+}
