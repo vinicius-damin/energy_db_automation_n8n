@@ -1,5 +1,5 @@
 {
-  "name": "1___Use_after_starting_the_project_test_SQL_insert_select_delete",
+  "name": "My workflow",
   "nodes": [
     {
       "parameters": {},
@@ -7,9 +7,9 @@
       "typeVersion": 1,
       "position": [
         80,
-        400
+        440
       ],
-      "id": "7c6082f8-d016-4f3c-a66f-4d07c53dbaf6",
+      "id": "7c727235-88f9-4a2c-aba2-37417a62e8a1",
       "name": "When clicking ‘Execute workflow’"
     },
     {
@@ -22,10 +22,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "position": [
         0,
-        -40
+        0
       ],
       "typeVersion": 1,
-      "id": "b7434dce-3eba-4424-870f-b6c4fa9978b8",
+      "id": "c174b66b-82e5-4592-bb28-065178faf1fb",
       "name": "Sticky Note"
     },
     {
@@ -38,13 +38,13 @@
       "typeVersion": 2.6,
       "position": [
         860,
-        600
+        640
       ],
-      "id": "65204a54-66a3-4f90-a11d-61d404a4536f",
+      "id": "24ee857d-8a71-4da1-bfbe-ff12f796f494",
       "name": "Inserts data",
       "credentials": {
         "postgres": {
-          "id": "lib3KQQokucMgRMe",
+          "id": "DGUvcrL4tsCBKOfr",
           "name": "Postgres account"
         }
       }
@@ -59,13 +59,13 @@
       "typeVersion": 2.6,
       "position": [
         1100,
-        600
+        640
       ],
-      "id": "f00e60ff-605b-41a1-90ff-09f37cf7b0e8",
+      "id": "1be08459-6a60-492a-b5a9-a0ef6c7a16e1",
       "name": "Pulls data from DB",
       "credentials": {
         "postgres": {
-          "id": "lib3KQQokucMgRMe",
+          "id": "DGUvcrL4tsCBKOfr",
           "name": "Postgres account"
         }
       }
@@ -80,13 +80,13 @@
       "typeVersion": 2.6,
       "position": [
         1320,
-        600
+        640
       ],
-      "id": "75336d5f-361a-44d8-9758-ea9fee16d6fc",
+      "id": "7356b1d8-29b6-48af-8fce-04f8817e3ffb",
       "name": "Deletes all data from client 1 in order",
       "credentials": {
         "postgres": {
-          "id": "lib3KQQokucMgRMe",
+          "id": "DGUvcrL4tsCBKOfr",
           "name": "Postgres account"
         }
       }
@@ -101,13 +101,13 @@
       "typeVersion": 2.6,
       "position": [
         1520,
-        600
+        640
       ],
-      "id": "dd13ba1e-da44-4dbc-aa24-747db1ff5bd3",
+      "id": "e27bb5f5-efe2-4cdd-b7e3-f7b6997d4299",
       "name": "Deletes ALL test data",
       "credentials": {
         "postgres": {
-          "id": "lib3KQQokucMgRMe",
+          "id": "DGUvcrL4tsCBKOfr",
           "name": "Postgres account"
         }
       }
@@ -133,13 +133,14 @@
       "typeVersion": 2.6,
       "position": [
         300,
-        400
+        440
       ],
-      "id": "b8c807b3-f0fe-4310-aaf7-dd7a87589418",
+      "id": "c501a9b3-a48f-4095-804c-52f477ea1d74",
       "name": "select last client",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "lib3KQQokucMgRMe",
+          "id": "DGUvcrL4tsCBKOfr",
           "name": "Postgres account"
         }
       }
@@ -173,9 +174,9 @@
       "typeVersion": 2.2,
       "position": [
         520,
-        400
+        440
       ],
-      "id": "1a8905df-8c49-478e-9d47-6af22dd524b6",
+      "id": "e4f43196-5203-476d-a721-d0ed60f01311",
       "name": "Client exists?"
     },
     {
@@ -199,13 +200,13 @@
       "typeVersion": 2.6,
       "position": [
         1140,
-        180
+        220
       ],
-      "id": "a52f8b59-6d0c-4fef-8fdc-657e8757ef79",
+      "id": "f6025623-6f5c-4ca8-a640-f793c80b1ae0",
       "name": "select table contracts",
       "credentials": {
         "postgres": {
-          "id": "lib3KQQokucMgRMe",
+          "id": "DGUvcrL4tsCBKOfr",
           "name": "Postgres account"
         }
       }
@@ -231,13 +232,13 @@
       "typeVersion": 2.6,
       "position": [
         1140,
-        20
+        60
       ],
-      "id": "efc061b9-8db4-4f07-90f2-2981b3da1e6e",
+      "id": "6a77220d-881c-4a75-afa2-76f1cbdbd393",
       "name": "select table clients",
       "credentials": {
         "postgres": {
-          "id": "lib3KQQokucMgRMe",
+          "id": "DGUvcrL4tsCBKOfr",
           "name": "Postgres account"
         }
       }
@@ -263,13 +264,13 @@
       "typeVersion": 2.6,
       "position": [
         1140,
-        340
+        380
       ],
-      "id": "0febec3a-2c31-45c0-b444-5c2f233197ef",
+      "id": "2ece29bb-1208-474a-99f4-313670c8e76f",
       "name": "select table energy_readings",
       "credentials": {
         "postgres": {
-          "id": "lib3KQQokucMgRMe",
+          "id": "DGUvcrL4tsCBKOfr",
           "name": "Postgres account"
         }
       }
@@ -365,11 +366,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "544b544f-4235-4bff-8e98-003a88ce5da0",
+  "versionId": "babb436e-9e49-472c-b2c9-6be7c068a469",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "caab66e1a9e45e87f9a2b25d354c453ee8ec993a7591d8d6a3a18f1e8de7c6e2"
+    "instanceId": "1f943a69a65f2bb2d863bb9aee21e503ca07cac986df6f24c8447c9dcc523e8f"
   },
-  "id": "f4epsOWrwxCtsPKz",
+  "id": "nqyX6jHQZq2h73Un",
   "tags": []
 }

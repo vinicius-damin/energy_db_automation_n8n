@@ -45,7 +45,7 @@ The n8n workflow (triggered by a webhook) runs an SQL query that enforces these 
 To start n8n with PostgreSQL (internal) and PostgreSQL (clients data) simply start **docker-compose by executing the following
 command in the root folder of this repository**.
 
-**IMPORTANT:** Before you do that change the default users and passwords in the [`.env`](.env) file! (Use the .env.dev as an example)
+**IMPORTANT:** Before you do that change the default users and passwords in the [`.env`](.env) file! (Use the .env.dev as an example). And if you are running on Linux change the [init-data.sh file](init-data.sh)
 
 ```
 docker-compose up -d
@@ -122,11 +122,12 @@ The n8n credential should look like this
 
 ## 2. 👀 Using N8N
 After you started all the containers
-1. Go to **http://localhost:5678/** and set up the owner account
-2. Create the credential for the Client's Postgres DB (the one that has the energy info). See the section "Testing Inside N8N"
+1. Go to **http://localhost:5678/** and set up the owner account (you can just put random info here if you are testing)
+2. Create the credential for the Client's Postgres DB (the one that has the energy info). See the section [1.2.2 Testing Inside N8N](#122-testing-inside-n8n)
 3. Create the credential for the OpenAI API (use your own OpenAI API Key, this repository does not provide one and if you do not have the section 2.2 won't work)
 3. Go to "Create workflow", select "Import from file" and select the workflows inside the folder **n8n_work_flows**. Do this for all Workflows. Rename them so you keep organized.
-4. Done!
+4. Open each workflow and **select your credentials FOR EACH POSTGRESS AND LLM NODE**
+5. Done!
 
 All the **relevant information** about how to test the application is **inside the workflows**! They **must be executed in order** for you to test the whole aplication, so look at the names in the folder **n8n_work_flows** and follow the numeric order:
 1. Start by running the "[1___Use_after_starting_the_project__Creates_tables_and_relations.json](n8n_work_flows/1___Use_after_starting_the_project__Creates_tables_and_relations.json)"
