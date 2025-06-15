@@ -1,5 +1,5 @@
 # energy_db_automation_n8n
-**Dockerized aplication** that runs N8N with Postgres to **store and automate processes** about different client's energy consumption.
+**Dockerized aplication** that runs N8N with Postgres to **store and automate processes** about client's energy consumption (kWh).
 
 This project is meant to run 3 containers, one for N8N, one for the internal database of N8N (to store workflows) and one for the client's actual data.
 
