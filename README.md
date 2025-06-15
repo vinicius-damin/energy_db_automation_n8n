@@ -3,7 +3,7 @@
 
 This project is meant to run 3 containers, one for N8N, one for the internal database of N8N (to store workflows) and one for the client's actual data.
 
-All the N8N workflows are included in the folder **nun_work_flows**. To understand the project specifications you must read the sticky notes inside the workflow.
+All the N8N workflows are included in the folder [**n8n_work_flows**](n8n_work_flows). To understand the project specifications you must read the sticky notes inside the workflow.
 
 [*Made by Vinicius Schaedler Damin*](https://www.linkedin.com/in/viniciusdamin/)
 
