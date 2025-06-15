@@ -21,7 +21,7 @@ All the N8N workflows are included in the folder **nun_work_flows**. To understa
 - [Next steps](#next-steps)
 
 ## 0. Bussiness understanding of the project
-*(If you just want to run the project skip to section 1. 🏎️ Start N8N.)*
+*(If you just want to run the project skip to section [1. 🏎️ Start N8N](#1-start-n8n))*
 
 This project answers a single business question: **“How is each currently-active customer consuming energy right now, and who looks unusual?”**
 To do that we apply six clear rules:
