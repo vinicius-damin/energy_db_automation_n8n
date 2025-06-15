@@ -32,7 +32,7 @@ To do that we apply six clear rules:
 
 - **All readings for an active client:** if the customer is active, we take every reading in that window, even if the contract that logged it is no longer active, because the business cares about the customer’s full recent demand.
 
-- **Average consumption:** for each active client we calculate the simple average of reading_amount_kwh across those recent readings.
+- **Average consumption:** for each active client we calculate the simple average of reading_amount_kwh across those recent readings grouped by month.
 
 - **Exclude empty histories:** clients with no readings in the period are dropped; there is no actionable data for them.
 
