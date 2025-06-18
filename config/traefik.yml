@@ -1,0 +1,16 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+log:
+  level: DEBUG
+api:
+  dashboard: true
+  insecure: true # DO NOT USE THIS IN PRODUCTION
+entryPoints:
+  web:
+    address: ":80" # tcp trafic for http
+  # websecure:
+  #   address: ":443" # tcp trafic for https
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock" # To allow dynamic configurtion inside Docker -> allows redirect using traefik routers

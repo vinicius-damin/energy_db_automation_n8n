@@ -76,17 +76,36 @@ services:
   # Runs the Traefik reverse proxy -> we need SSL (HTTPs for N8N):
     # The official v3 Traefik docker image
     image: traefik:v3.4
-    # Enables the web UI and tells Traefik to listen to docker
-    command:
-      - --api.insecure=true
-      - --api.dashboard=true
-      - --providers.docker
-      - --entrypoints.web.address=:80
+    container_name: aprendendo_traefik
+
+    # Enables the web UI and tells Traefik to listen to docker -> not used cause we have traefik.yml
+    # command:
+    #   - --api.insecure=true
+    #   - --api.dashboard=true
+    #   - --providers.docker
+    #   - --entrypoints.web.address=:80
     ports:
       # The HTTP port
       - "80:80" # como nao existe regra que combine com  Host("localhost") eu nunca vou conseguir acessar o painel via http://localhost
       # The Web UI (enabled by --api.insecure=true)
       - "8080:8080" # to see traefik raw data go to http://localhost:8080/api/rawdata
+
+      # The HTTPS port
+      # - "443:443" # Uncomment if you want to use https
+
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro # read only
+
+    restart: unless-stopped
+
+    # In case of shared network
+    # networks:
+    #  - frontend
+
+  # If we have many docker compose files we should use a shared network
+  # Ex: docker network create frontend
+  # networks:
+  #   frontend:
+  #     external: true
