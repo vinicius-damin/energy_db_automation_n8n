@@ -39,6 +39,9 @@ services:
       - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
       - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
       - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+      # - N8N_EDITOR_BASE_URL=https://n8n.localhost # verificar necessidade
+      - N8N_SECURE_COOKIE=false                      # até ativar HTTPS
+
     ports:
       - 5678:5678
     links:
@@ -78,15 +81,9 @@ services:
     image: traefik:v3.4
     container_name: aprendendo_traefik
 
-    # Enables the web UI and tells Traefik to listen to docker -> not used cause we have traefik.yml
-    # command:
-    #   - --api.insecure=true
-    #   - --api.dashboard=true
-    #   - --providers.docker
-    #   - --entrypoints.web.address=:80
     ports:
       # The HTTP port
-      - "80:80" # como nao existe regra que combine com  Host("localhost") eu nunca vou conseguir acessar o painel via http://localhost
+      - "80:80" 
       # The Web UI (enabled by --api.insecure=true)
       - "8080:8080" # to see traefik raw data go to http://localhost:8080/api/rawdata
 
@@ -96,7 +93,7 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro # read only
+      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro # read only -> to run you must have the yml file at ./config/
 
     restart: unless-stopped
 

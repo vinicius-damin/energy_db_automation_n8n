@@ -1,3 +1,10 @@
+# This file substitutes the command section below in the docker-compose.yml file for the Traefik container.
+    # command:
+    #   - --api.insecure=true
+    #   - --api.dashboard=true
+    #   - --providers.docker
+    #   - --entrypoints.web.address=:80
+
 global:
   checkNewVersion: true
   sendAnonymousUsage: false

@@ -187,3 +187,9 @@ Now to see it really being useful you must put **real world data about your comp
 
 Most of the work will actually be thinking about easy ways to create these .csv files (or even change it to a better way!)
 
+
+
+# Traefik
+Acesse o dashboard do traefik indo em http://localhost:8080/
+Acesse o n8n indo em http://localhost:5678/setup ou http://n8n.localhost/setup
+ATENÇÃO: o N8N do jeito que o rep tá hoje só funciona sem HTTPS
