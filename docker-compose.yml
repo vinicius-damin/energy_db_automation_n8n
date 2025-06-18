@@ -1,4 +1,4 @@
-version: '3.8'
+# version: '3.8'
 
 volumes:
   db_storage:
@@ -42,8 +42,8 @@ services:
       # - N8N_EDITOR_BASE_URL=https://n8n.localhost # verificar necessidade
       - N8N_SECURE_COOKIE=false                      # até ativar HTTPS
 
-    ports:
-      - 5678:5678
+    # ports: with traefik we do not need to expose the port (users should only use the web browser)
+    #   - 5678:5678
     links:
       - postgres
     volumes:
@@ -96,6 +96,12 @@ services:
       - ./config/traefik.yml:/etc/traefik/traefik.yml:ro # read only -> to run you must have the yml file at ./config/
 
     restart: unless-stopped
+    labels:  
+      - traefik.enable=true
+      # Router for the dashboard -> Never use this on production
+      - traefik.http.routers.traefik.rule=Host(`traefik.localhost`)
+      - traefik.http.routers.traefik.entrypoints=web
+      - traefik.http.routers.traefik.service=api@internal      # aponta p/ dashboard/API internos
 
     # In case of shared network
     # networks:
