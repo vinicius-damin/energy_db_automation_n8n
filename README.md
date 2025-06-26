@@ -193,3 +193,5 @@ Most of the work will actually be thinking about easy ways to create these .csv 
 Acesse o dashboard do traefik indo em http://localhost:8080/ ou (agora com o server apontado para api@internal) http://traefik.localhost/
 Acesse o n8n indo em http://n8n.localhost/setup
 ATENÇÃO: o N8N do jeito que o rep tá hoje só funciona sem HTTPS
+
+Agora vai funcionar na nuvem só com Http
