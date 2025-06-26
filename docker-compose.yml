@@ -41,7 +41,7 @@ services:
       - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
       - N8N_EDITOR_BASE_URL=https://${N8N_HOST}
       - N8N_SECURE_COOKIE=false                      # até ativar HTTPS
-
+      - N8N_WEBHOOK_URL=https://${N8N_HOST}
     # ports: with traefik we do not need to expose the port (users should only use the web browser)
     #   - 5678:5678
     links:
